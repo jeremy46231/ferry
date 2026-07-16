@@ -30,14 +30,14 @@ gets a chance to handle it before falling back to the static file server.
 
 ## Running
 
-From the repo root (copies the root `.env` into every sandbox and installs):
+From the repo root (symlinks the root `.env` into every sandbox and installs):
 
 ```sh
 bun run sandbox:setup    # once (or after adding a dependency)
 bun run sandbox:workers  # http://localhost:5173
 ```
 
-Or from this directory: `bun run setup` (copies the root `.env` here as
+Or from this directory: `bun run setup` (symlinks the root `.env` here as
 `.dev.vars` and installs), then `bun run dev`.
 
 Then open http://localhost:5173. Secrets (`FERRY_*`) live in `.dev.vars`,

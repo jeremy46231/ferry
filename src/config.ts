@@ -64,17 +64,19 @@ export interface ResolvedConfig {
   }
 }
 
-// `basic_info` covers email, name, verification status, birthday, phone — and,
-// confirmed in practice, the Slack ID (our dedup key). So no explicit `slack_id`.
+// The scopes a YSWS app is granted. `basic_info` is the HQ-gated bundle that
+// carries email, name, verification status, birthday, phone — and, confirmed in
+// practice, the Slack ID (our dedup key) + ysws_eligible. `name`/`birthdate`/
+// `address` add those identity fields. We deliberately DON'T request the generic
+// OIDC scopes `openid`/`profile`/`email`: apps must be permitted for each scope
+// they request or the authorize step fails, and those aren't granted to YSWS
+// apps (nor needed — `basic_info` already covers the data).
 const DEFAULT_HCA_SCOPES = [
-  'openid',
-  'profile',
-  'email',
+  'basic_info',
   'name',
   'verification_status',
   'birthdate',
   'address',
-  'basic_info',
 ]
 
 const DEFAULT_HACKATIME_SCOPES = ['profile', 'read']

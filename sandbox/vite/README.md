@@ -10,14 +10,14 @@ server.middlewares.use(ferry.middleware())
 
 ## Run
 
-From the repo root (copies the root `.env` into every sandbox and installs):
+From the repo root (symlinks the root `.env` into every sandbox and installs):
 
 ```sh
 bun run sandbox:setup    # once (or after adding a dependency)
 bun run sandbox:vite     # http://localhost:5173
 ```
 
-Or from this directory: `bun run setup` (copies the root `.env` here as `.env`
+Or from this directory: `bun run setup` (symlinks the root `.env` here as `.env`
 and installs), then `bun run dev`.
 
 Open <http://localhost:5173>, click **Start submission**, and you'll go through

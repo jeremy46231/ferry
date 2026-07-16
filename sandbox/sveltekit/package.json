@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"setup": "cp ../../.env .env && bun install",
+		"setup": "ln -sf ../../.env .env && bun install",
 		"dev": "vite dev",
 		"prepare": "svelte-kit sync || echo ''"
 	},

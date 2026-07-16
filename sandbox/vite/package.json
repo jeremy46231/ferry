@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "setup": "cp ../../.env .env && bun install",
+    "setup": "ln -sf ../../.env .env && bun install",
     "dev": "vite"
   },
   "devDependencies": {

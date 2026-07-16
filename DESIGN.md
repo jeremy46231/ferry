@@ -183,10 +183,13 @@ Hackatime tokens are persisted (in Airtable) for reuse.
 **Hack Club Auth** (`auth.hackclub.com`)
 
 - `GET /oauth/authorize` → `POST /oauth/token` → `GET /api/v1/me` (Bearer).
-- Scopes: community-level `openid profile email name verification_status` plus
-  HQ-gated `birthdate address basic_info` as granted to our app. The Slack ID is
-  our dedup key (no Slack ID → no Airtable row); `basic_info` provides it
-  (confirmed in practice), so **no explicit `slack_id` scope is needed**.
+- Scopes (default): `basic_info name verification_status birthdate address`.
+  Apps must be *permitted* for each scope they request or the authorize step
+  fails, so we request only what a YSWS app is granted — **not** the generic
+  OIDC scopes `openid`/`profile`/`email` (redundant here, and not granted). The
+  HQ-gated `basic_info` bundle carries email, name, verification/eligibility and
+  the Slack ID — our dedup key (no Slack ID → no Airtable row) — so **no explicit
+  `slack_id` scope is needed**.
 - `/api/v1/me` fields used: `id`, `ysws_eligible`, `verification_status`,
   `first_name`, `last_name`, `primary_email`, `slack_id`, `birthday`,
   `addresses[]` (line_1/2, city, state, postal_code, country).

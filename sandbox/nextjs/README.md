@@ -31,14 +31,14 @@ plain `http://localhost`. Ferry reads the rest of its config (`FERRY_*`) from
 
 ## Running it
 
-From the repo root (copies the root `.env` into every sandbox and installs):
+From the repo root (symlinks the root `.env` into every sandbox and installs):
 
 ```bash
 bun run sandbox:setup    # once (or after adding a dependency)
 bun run sandbox:nextjs   # http://localhost:5173
 ```
 
-Or from this directory: `bun run setup` (copies the root `.env` here as
+Or from this directory: `bun run setup` (symlinks the root `.env` here as
 `.env.local` and installs), then `bun run dev`.
 
 The `dev` script runs `next dev -p 5173 --webpack`, forced onto port 5173 (all

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "setup": "cp ../../.env .dev.vars && bun install",
+    "setup": "ln -sf ../../.env .dev.vars && bun install",
     "dev": "wrangler dev --port 5173"
   },
   "devDependencies": {

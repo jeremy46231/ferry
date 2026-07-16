@@ -66,14 +66,16 @@ Integration sandboxes live in `sandbox/` — one per host (`vite`, `sveltekit`,
 dev creds in a repo-root `.env` (copy `.env.example`), then:
 
 ```sh
-bun run sandbox:setup      # copy .env into each sandbox and install
+bun run sandbox:setup      # symlink .env into each sandbox and install
 bun run sandbox:vite       # run one sandbox (also :sveltekit, :nextjs, :workers)
 ```
 
-`sandbox:setup` runs each sandbox's own `setup` script (which copies the root
-`.env` to that host's env file and installs). The sandboxes import Ferry's
-`src/` directly, so library edits are picked up live — no build or publish step.
-See each sandbox's `README.md`.
+`sandbox:setup` runs each sandbox's own `setup` script, which **symlinks** the
+root `.env` to that host's env file (`.env` / `.env.local` / `.dev.vars`) — so
+edits to the root `.env` are picked up on the next server start, no re-setup
+needed — and installs. The sandboxes also import Ferry's `src/` directly, so
+library edits are picked up live too — no build or publish step. See each
+sandbox's `README.md`.
 
 Wiring Ferry into a host is a line or two:
 

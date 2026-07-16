@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "setup": "cp ../../.env .env.local && bun install",
+    "setup": "ln -sf ../../.env .env.local && bun install",
     "dev": "next dev -p 5173 --webpack"
   },
   "dependencies": {
