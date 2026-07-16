@@ -31,26 +31,29 @@ plain `http://localhost`. Ferry reads the rest of its config (`FERRY_*`) from
 
 ## Running it
 
+From the repo root (sets up every sandbox — build + pack ferry, copy `.env`,
+install — then start this one):
+
 ```bash
-(cd ../.. && bun run pack:sandbox)   # build + pack ferry.tgz (first time / after lib changes)
-bun install                          # installs Next + ferry (from ../../ferry.tgz)
-bun run dev                          # http://localhost:5173
+bun run sandbox:setup    # once; also refreshes after library changes
+bun run sandbox:nextjs   # http://localhost:5173
 ```
 
-Then open http://localhost:5173. The `dev` script runs
-`next dev -p 5173 --webpack`, forced onto port 5173 (all Ferry sandboxes
-share that port and run one at a time) and onto webpack instead of Turbopack,
-which keeps resolution of the local `file:` tarball dependency hassle-free.
-`next.config.ts`'s `outputFileTracingRoot` silences the workspace-root warning
-from having a lockfile above this directory.
+Or from this directory: `bun run setup` (copies the root `.env` here as
+`.env.local` and installs), then `bun run dev`.
+
+The `dev` script runs `next dev -p 5173 --webpack`, forced onto port 5173 (all
+Ferry sandboxes share that port and run one at a time) and onto webpack instead
+of Turbopack, which keeps resolution of the local `file:` tarball dependency
+hassle-free. `next.config.ts`'s `outputFileTracingRoot` silences the
+workspace-root warning from having a lockfile above this directory.
 
 ## Consuming Ferry
 
 This sandbox installs Ferry from a packed tarball (`"ferry":
 "file:../../ferry.tgz"`) — the actual published artifact, built from the repo
-root's `dist/`. If you change Ferry's source, re-run `bun run pack:sandbox` at
-the repo root, `bun install --force` here (bun caches the tarball, so `--force`
-re-extracts it), and restart `bun run dev`.
+root's `dist/`. `bun run sandbox:setup` at the repo root re-packs and
+re-installs it after library changes.
 
-`.env.local` is a copy of the shared sandbox dev credentials
-(`sandbox/vite/.env`) and is gitignored.
+`.env.local` comes from the repo-root `.env` (copied by `setup`) and is
+gitignored.

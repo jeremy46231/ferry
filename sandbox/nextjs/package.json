@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 5173 --webpack",
-    "build": "next build",
-    "start": "next start"
+    "setup": "cp ../../.env .env.local && bun install --force",
+    "dev": "next dev -p 5173 --webpack"
   },
   "dependencies": {
     "next": "16.2.10",

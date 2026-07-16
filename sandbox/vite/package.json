@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "setup": "cp ../../.env .env && bun install --force",
     "dev": "vite"
   },
   "dependencies": {

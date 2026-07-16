@@ -29,11 +29,16 @@ gets a chance to handle it before falling back to the static file server.
 
 ## Running
 
+From the repo root (sets up every sandbox — build + pack ferry, copy `.env`,
+install — then start this one):
+
 ```sh
-(cd ../.. && bun run pack:sandbox)   # build + pack ferry.tgz (first time / after lib changes)
-bun install                          # installs wrangler + ferry (from ../../ferry.tgz)
-bun run dev                          # http://localhost:5173
+bun run sandbox:setup    # once; also refreshes after library changes
+bun run sandbox:workers  # http://localhost:5173
 ```
+
+Or from this directory: `bun run setup` (copies the root `.env` here as
+`.dev.vars` and installs), then `bun run dev`.
 
 Then open http://localhost:5173. Secrets (`FERRY_*`) live in `.dev.vars`,
 which Wrangler loads automatically in dev — Workers have no `process.env`, so
@@ -42,9 +47,5 @@ they're passed explicitly via `createFerry({ env })`.
 ## Updating Ferry
 
 This project installs Ferry from a packed tarball (`"ferry":
-"file:../../ferry.tgz"`). After changing Ferry's source, re-pack and reinstall:
-
-```sh
-(cd ../.. && bun run pack:sandbox)
-bun install --force   # bun caches the tarball; --force re-extracts it
-```
+"file:../../ferry.tgz"`). `bun run sandbox:setup` at the repo root re-packs and
+re-installs it (bun caches the tarball, so `setup` uses `--force` to re-extract).

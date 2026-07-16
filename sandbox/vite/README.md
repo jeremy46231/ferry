@@ -10,16 +10,18 @@ server.middlewares.use(ferry.middleware())
 
 ## Run
 
+From the repo root (sets up every sandbox — build + pack ferry, copy `.env`,
+install — then start this one):
+
 ```sh
-(cd ../.. && bun run pack:sandbox)   # build + pack ferry.tgz (first time / after lib changes)
-bun install                          # installs vite + ferry (from ../../ferry.tgz)
-bun run dev                          # http://localhost:5173
+bun run sandbox:setup    # once; also refreshes after library changes
+bun run sandbox:vite     # http://localhost:5173
 ```
 
-> Ferry is installed from a packed tarball (`file:../../ferry.tgz`). After
-> changing library source, re-run `bun run pack:sandbox` at the repo root and
-> `bun install --force` here (bun caches the tarball, so `--force` re-extracts
-> it), then restart.
+Or from this directory: `bun run setup` (copies the root `.env` here as `.env`
+and installs), then `bun run dev`.
 
 Open <http://localhost:5173>, click **Start submission**, and you'll go through
-Hack Club Auth → Hackatime → Fillout. Creds live in `.env` (gitignored).
+Hack Club Auth → Hackatime → Fillout. Creds come from the repo-root `.env`
+(gitignored); Ferry installs from the packed tarball, which `setup` re-extracts
+after library changes.

@@ -62,10 +62,17 @@ bun run check:fix   # biome, with autofixes applied
 ```
 
 Integration sandboxes live in `sandbox/` — one per host (`vite`, `sveltekit`,
-`nextjs`, `workers`), each mounting Ferry at `/submit` on port 5173. They install
-Ferry from a packed tarball: run `bun run pack:sandbox` (build + pack
-`ferry.tgz`) at the repo root, then `bun install` in a sandbox. See each
-sandbox's `README.md`.
+`nextjs`, `workers`), each mounting Ferry at `/submit` on port 5173. Put your
+dev creds in a repo-root `.env` (copy `.env.example`), then:
+
+```sh
+bun run sandbox:setup      # build + pack ferry, copy .env into each sandbox, install all
+bun run sandbox:vite       # run one sandbox (also :sveltekit, :nextjs, :workers)
+```
+
+`sandbox:setup` runs each sandbox's own `setup` script (which copies the root
+`.env` to that host's env file and installs); re-run it after changing library
+source to re-pack and refresh. See each sandbox's `README.md`.
 
 Wiring Ferry into a host is a line or two:
 

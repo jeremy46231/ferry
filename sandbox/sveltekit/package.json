@@ -4,12 +4,9 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
+		"setup": "cp ../../.env .env && bun install --force",
 		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"prepare": "svelte-kit sync || echo ''"
 	},
 	"dependencies": {
 		"ferry": "file:../../ferry.tgz"

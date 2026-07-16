@@ -3,10 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "deploy": "wrangler deploy",
-    "dev": "wrangler dev --port 5173",
-    "start": "wrangler dev --port 5173",
-    "cf-typegen": "wrangler types"
+    "setup": "cp ../../.env .dev.vars && bun install --force",
+    "dev": "wrangler dev --port 5173"
   },
   "dependencies": {
     "ferry": "file:../../ferry.tgz"
