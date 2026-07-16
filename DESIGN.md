@@ -64,7 +64,7 @@ interface FerryConfig {
   hackClubAuth: {
     clientId: string // FERRY_HCA_CLIENT_ID
     clientSecret: string // FERRY_HCA_CLIENT_SECRET
-    scopes?: string[] // default incl. slack_id (required), name, verification_status, ...
+    scopes?: string[] // default: name, verification_status, basic_info (provides Slack ID), address, ...
   }
 
   hackatime: {
@@ -136,21 +136,27 @@ row, redirect to Fillout again. Supports resubmission / updates.
 ## Session cookie
 
 - **AES-GCM encrypted** (Web Crypto), keyed from `session.secret`.
-- Minimal contents: OAuth `state`, PKCE verifier, current step, and the user's
+- Minimal contents: OAuth `state`, which provider is `pending`, and the user's
   `auth_token` once known. **Raw OAuth tokens live only in Airtable, never in the
   cookie.**
 - `HttpOnly; Secure; SameSite=Lax; Path=<basePath>`.
 
 ## OAuth
 
-Standard OAuth2 + PKCE for both providers; `state` verified against the cookie.
+Plain OAuth2 authorization-code for both providers — **no PKCE** (HCA's discovery
+doc reports `code_challenge_methods_supported: null` and neither provider
+documents it). CSRF is covered by an opaque `state` verified against the encrypted
+cookie. The client secret is sent in the token request body (`client_secret_post`).
+The HCA access token is used once (to call `/api/v1/me`) and then discarded — only
+Hackatime tokens are persisted (in Airtable) for reuse.
 
 **Hack Club Auth** (`auth.hackclub.com`)
 
 - `GET /oauth/authorize` → `POST /oauth/token` → `GET /api/v1/me` (Bearer).
-- Scopes: community-level `openid profile email name slack_id verification_status`
-  plus HQ-gated `birthdate address basic_info` as granted to our app.
-  **`slack_id` is required** (dedup key; no Slack ID → no Airtable row).
+- Scopes: community-level `openid profile email name verification_status` plus
+  HQ-gated `birthdate address basic_info` as granted to our app. The Slack ID is
+  our dedup key (no Slack ID → no Airtable row); `basic_info` provides it
+  (confirmed in practice), so **no explicit `slack_id` scope is needed**.
 - `/api/v1/me` fields used: `id`, `ysws_eligible`, `verification_status`,
   `first_name`, `last_name`, `primary_email`, `slack_id`, `birthday`,
   `addresses[]` (line_1/2, city, state, postal_code, country).

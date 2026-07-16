@@ -60,7 +60,6 @@ describe('cookie helpers', () => {
 describe('session store', () => {
   const data: SessionData = {
     state: 'abc123',
-    pkceVerifier: 'verifier-value',
     pending: 'hackclub',
     authToken: 'OwpFjcAKOj2uWza5',
   }
@@ -73,7 +72,6 @@ describe('session store', () => {
     const read = await store.read(requestWithCookie(baseOpts.cookieName, value))
     if (!read) throw new Error('expected a session to be read back')
     expect(read.state).toBe('abc123')
-    expect(read.pkceVerifier).toBe('verifier-value')
     expect(read.pending).toBe('hackclub')
     expect(read.authToken).toBe('OwpFjcAKOj2uWza5')
     expect(typeof read.exp).toBe('number')

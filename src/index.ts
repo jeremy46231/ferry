@@ -1,4 +1,6 @@
 import { type ResolvedConfig, resolveConfig, validateConfig } from './config'
+import { textResponse } from './pages'
+import { handleFerryRequest } from './router'
 import { createSessionStore, type SessionStore } from './session'
 import type { FerryConfig } from './types'
 
@@ -16,13 +18,6 @@ export interface Ferry {
    * `console.error` on the server.
    */
   handle(request: Request): Promise<Response | null>
-}
-
-function textResponse(status: number, message: string): Response {
-  return new Response(`${message}\n`, {
-    status,
-    headers: { 'content-type': 'text/plain; charset=utf-8' },
-  })
 }
 
 /** Does `pathname` fall under `basePath` (the prefix itself or a child)? */
@@ -79,13 +74,8 @@ export function createFerry(options: FerryConfig = {}): Ferry {
         const secret = config.session.secret
         if (!secret) return textResponse(500, 'Ferry is misconfigured.')
         const session = getSessionStore(secret)
-        void session // wired for the router landing in step 3
 
-        // TODO(step 3+): OAuth + Airtable + Fillout state machine.
-        return textResponse(
-          501,
-          'Ferry route handler not yet implemented (scaffold).'
-        )
+        return await handleFerryRequest(request, url, { config, session })
       } catch (err) {
         console.error('[ferry] unhandled error in handle():', err)
         return textResponse(500, 'Ferry encountered an internal error.')

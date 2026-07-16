@@ -76,7 +76,7 @@ describe('resolveConfig()', () => {
     expect(cfg.session.cookieName).toBe('ferry_session')
     expect(cfg.session.ttlSeconds).toBe(3600)
     expect(cfg.session.secure).toBe(true)
-    expect(cfg.hackClubAuth.scopes).toContain('slack_id')
+    expect(cfg.hackClubAuth.scopes).toContain('basic_info')
     expect(cfg.airtable.tables.users).toBe('User')
   })
 

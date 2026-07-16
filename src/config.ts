@@ -57,12 +57,13 @@ export interface ResolvedConfig {
   }
 }
 
+// `basic_info` covers email, name, verification status, birthday, phone — and,
+// confirmed in practice, the Slack ID (our dedup key). So no explicit `slack_id`.
 const DEFAULT_HCA_SCOPES = [
   'openid',
   'profile',
   'email',
   'name',
-  'slack_id',
   'verification_status',
   'birthdate',
   'address',

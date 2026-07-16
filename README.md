@@ -7,8 +7,9 @@ Fillout hand-off.
 
 See [`DESIGN.md`](./DESIGN.md) for the architecture and decisions.
 
-> **Status:** early scaffold. Config loading + encrypted session cookie are in
-> place; the OAuth/Airtable/Fillout state machine is not implemented yet.
+> **Status:** early. Config loading, encrypted session cookie, and the Hack Club
+> Auth OAuth flow (authorize → callback → `/api/v1/me` → eligibility gating) are
+> in place. Airtable upsert, Hackatime, and the Fillout redirect are not wired yet.
 
 ## Usage (target API)
 

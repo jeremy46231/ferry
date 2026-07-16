@@ -19,7 +19,8 @@ export interface FerryConfig {
     clientId?: string
     /** Env: `FERRY_HCA_CLIENT_SECRET`. */
     clientSecret?: string
-    /** OAuth scopes to request. `slack_id` is required (dedup key). */
+    /** OAuth scopes to request. `basic_info` covers the Slack ID (dedup key),
+     * so no explicit `slack_id` scope is needed. */
     scopes?: string[]
   }
 
@@ -75,8 +76,6 @@ export interface FerryConfig {
 export interface SessionData {
   /** OAuth `state` for the in-flight authorization, if any. */
   state?: string
-  /** PKCE code verifier for the in-flight authorization, if any. */
-  pkceVerifier?: string
   /** Which provider the in-flight authorization is for. */
   pending?: 'hackclub' | 'hackatime'
   /** The Airtable `User` row's `auth_token`, once known. */
