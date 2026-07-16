@@ -1,3 +1,4 @@
+import { requireAirtable, upsertUser } from './airtable'
 import type { ResolvedConfig } from './config'
 import { buildAuthorizeUrl, exchangeCode, randomState } from './oauth'
 import { escapeHtml, htmlResponse } from './pages'
@@ -135,7 +136,22 @@ async function hackclubCallback(
     )
   }
 
-  // TODO(step 4): upsert the User row in Airtable and read back its auth_token.
+  if (!identity.slack_id) {
+    return htmlResponse(
+      400,
+      'Slack account required',
+      '<h1>Slack account required</h1><p>Your Hack Club account has no linked Slack ID, which this program needs. Please link Slack and try again.</p>'
+    )
+  }
+
+  // Upsert the User row (keyed on Slack ID). Ferry mints the Auth Token and
+  // writes it on creation — no automation, no reread round trip.
+  const airtable = requireAirtable(config)
+  const { authToken, created } = await upsertUser(airtable, identity)
+
+  // Remember the token for later steps / return visits.
+  const setCookie = await session.commit({ authToken })
+
   // TODO(step 5): Hackatime connect / project sync, then redirect to Fillout.
   const name = [identity.first_name, identity.last_name]
     .filter(Boolean)
@@ -145,9 +161,10 @@ async function hackclubCallback(
     'Signed in',
     `<h1>Signed in to Hack Club</h1>
 <p>Welcome${name ? `, ${escapeHtml(name)}` : ''}.</p>
-<p class="muted">Slack ID: <code>${escapeHtml(identity.slack_id ?? '—')}</code><br>
+<p class="muted">Slack ID: <code>${escapeHtml(identity.slack_id)}</code><br>
 Email: <code>${escapeHtml(identity.primary_email ?? '—')}</code><br>
 Verification: <code>${escapeHtml(identity.verification_status ?? '—')}</code></p>
-<p class="muted">Airtable + Hackatime + Fillout steps are not wired yet.</p>`
+<p class="muted">Airtable User row ${created ? 'created' : 'updated'}. Hackatime + Fillout steps are not wired yet.</p>`,
+    { 'set-cookie': setCookie }
   )
 }

@@ -96,31 +96,43 @@ describe('hack club auth callback', () => {
     const ferry = createFerry(config)
     const { state, cookie } = await startAuth(ferry)
 
-    const fetchMock = vi.fn(async (input: string | URL | Request) => {
-      const url = String(input)
-      if (url.endsWith('/oauth/token')) {
-        return json({
-          access_token: 'tok',
-          token_type: 'Bearer',
-          expires_in: 100,
-        })
+    const fetchMock = vi.fn(
+      async (input: string | URL | Request, init?: RequestInit) => {
+        const url = String(input)
+        if (url.endsWith('/oauth/token')) {
+          return json({
+            access_token: 'tok',
+            token_type: 'Bearer',
+            expires_in: 100,
+          })
+        }
+        if (url.endsWith('/api/v1/me')) {
+          return json({
+            identity: {
+              id: 'u1',
+              verification_status: 'verified',
+              ysws_eligible: true,
+              first_name: 'Ada',
+              last_name: 'Lovelace',
+              slack_id: 'U123',
+              primary_email: 'ada@example.com',
+            },
+            scopes: ['name', 'basic_info'],
+          })
+        }
+        // Airtable: no existing user, then create.
+        if (
+          url.includes('api.airtable.com') &&
+          (init?.method ?? 'GET') === 'GET'
+        ) {
+          return json({ records: [] })
+        }
+        if (url.includes('api.airtable.com') && init?.method === 'POST') {
+          return json({ id: 'recNew', fields: {}, createdTime: 'now' })
+        }
+        throw new Error(`unexpected fetch: ${url}`)
       }
-      if (url.endsWith('/api/v1/me')) {
-        return json({
-          identity: {
-            id: 'u1',
-            verification_status: 'verified',
-            ysws_eligible: true,
-            first_name: 'Ada',
-            last_name: 'Lovelace',
-            slack_id: 'U123',
-            primary_email: 'ada@example.com',
-          },
-          scopes: ['name', 'basic_info'],
-        })
-      }
-      throw new Error(`unexpected fetch: ${url}`)
-    })
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const res = await ferry.handle(
@@ -132,7 +144,10 @@ describe('hack club auth callback', () => {
     const html = (await res?.text()) ?? ''
     expect(html).toContain('Ada Lovelace')
     expect(html).toContain('U123')
-    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(html).toContain('created')
+    // token exchange, /me, airtable find, airtable create
+    expect(fetchMock).toHaveBeenCalledTimes(4)
+    expect(res?.headers.get('set-cookie')).toContain('ferry_session=')
   })
 
   it('redirects a needs_submission user to HCA verification', async () => {

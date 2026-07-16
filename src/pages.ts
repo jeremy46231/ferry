@@ -36,11 +36,12 @@ ${bodyHtml}
 export function htmlResponse(
   status: number,
   title: string,
-  bodyHtml: string
+  bodyHtml: string,
+  extraHeaders?: Record<string, string>
 ): Response {
   return new Response(page(title, bodyHtml), {
     status,
-    headers: { 'content-type': 'text/html; charset=utf-8' },
+    headers: { 'content-type': 'text/html; charset=utf-8', ...extraHeaders },
   })
 }
 

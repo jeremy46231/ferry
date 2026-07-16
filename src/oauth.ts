@@ -7,6 +7,8 @@
  * request body (`client_secret_post`) and an opaque `state` for CSRF.
  */
 
+import { randomHex } from './random'
+
 export interface OAuthEndpoints {
   authorizeEndpoint: string
   tokenEndpoint: string
@@ -83,9 +85,6 @@ export async function exchangeCode(
 }
 
 /** Cryptographically-random hex string for the OAuth `state` parameter. */
-export function randomState(bytes = 32): string {
-  const arr = crypto.getRandomValues(new Uint8Array(bytes))
-  let out = ''
-  for (const b of arr) out += b.toString(16).padStart(2, '0')
-  return out
+export function randomState(): string {
+  return randomHex(32)
 }
