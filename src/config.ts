@@ -24,6 +24,7 @@ export function env(key: string): string | undefined {
 export interface ResolvedConfig {
   baseUrl?: string
   basePath: string
+  secret?: string
   hackClubAuth: {
     clientId?: string
     clientSecret?: string
@@ -50,7 +51,6 @@ export interface ResolvedConfig {
     linkingKeyParam: string
   }
   session: {
-    secret?: string
     cookieName: string
     ttlSeconds: number
     secure: boolean
@@ -106,6 +106,7 @@ export function resolveConfig(input: FerryConfig = {}): ResolvedConfig {
   return {
     baseUrl: input.baseUrl ?? env('FERRY_BASE_URL'),
     basePath: normalizeBasePath(input.basePath ?? env('FERRY_BASE_PATH')),
+    secret: input.secret ?? env('FERRY_SECRET'),
 
     hackClubAuth: {
       clientId: input.hackClubAuth?.clientId ?? env('FERRY_HCA_CLIENT_ID'),
@@ -149,7 +150,6 @@ export function resolveConfig(input: FerryConfig = {}): ResolvedConfig {
     },
 
     session: {
-      secret: input.session?.secret ?? env('FERRY_SESSION_SECRET'),
       cookieName: input.session?.cookieName ?? 'ferry_session',
       ttlSeconds: input.session?.ttlSeconds ?? 3600,
       secure: input.session?.secure ?? true,
@@ -185,10 +185,10 @@ export function validateConfig(cfg: ResolvedConfig): string[] {
   if (!cfg.fillout.formUrl)
     missing.push('fillout.formUrl (FERRY_FILLOUT_FORM_URL)')
 
-  if (!cfg.session.secret) {
-    missing.push('session.secret (FERRY_SESSION_SECRET)')
-  } else if (cfg.session.secret.length < 32) {
-    missing.push('session.secret must be at least 32 characters')
+  if (!cfg.secret) {
+    missing.push('secret (FERRY_SECRET)')
+  } else if (cfg.secret.length < 32) {
+    missing.push('secret must be at least 32 characters')
   }
 
   return missing

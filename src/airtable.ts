@@ -29,7 +29,25 @@ const USER_FIELDS = {
   country: 'Country',
   zip: 'ZIP / Postal Code',
   authToken: 'Auth Token',
+  hackatimeToken: 'Hackatime Token',
+  hackatimeUserId: 'Hackatime User ID',
+  hackatimeProjects: 'Hackatime Projects',
 } as const
+
+/** Field names on the `Hackatime Projects` table. */
+const PROJECT_FIELDS = {
+  name: 'Name',
+  time: 'Time',
+  user: 'User',
+} as const
+
+/** Chunk an array into groups of at most `size` (Airtable batch limit is 10). */
+function chunk<T>(items: T[], size: number): T[][] {
+  const out: T[][] = []
+  for (let i = 0; i < items.length; i += size)
+    out.push(items.slice(i, i + size))
+  return out
+}
 
 export interface AirtableRecord<F = Record<string, unknown>> {
   id: string
@@ -176,4 +194,95 @@ export async function upsertUser(
     }),
   })
   return { record, authToken, created: true }
+}
+
+/** Fetch a single User record by id (to read link fields, tokens, etc). */
+export function getUser(
+  cfg: AirtableConfig,
+  recordId: string
+): Promise<AirtableRecord> {
+  const table = encodeURIComponent(cfg.tables.users)
+  return airtableFetch<AirtableRecord>(cfg, `${table}/${recordId}`)
+}
+
+/** Read the stored Hackatime access token from a User record, if any. */
+export function hackatimeTokenOf(record: AirtableRecord): string | undefined {
+  const token = record.fields[USER_FIELDS.hackatimeToken]
+  return typeof token === 'string' && token.length > 0 ? token : undefined
+}
+
+/** Store the Hackatime access token + numeric user id on a User record. */
+export function updateUserHackatime(
+  cfg: AirtableConfig,
+  recordId: string,
+  data: { token: string; userId: number }
+): Promise<AirtableRecord> {
+  const table = encodeURIComponent(cfg.tables.users)
+  return airtableFetch<AirtableRecord>(cfg, `${table}/${recordId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      fields: {
+        [USER_FIELDS.hackatimeToken]: data.token,
+        [USER_FIELDS.hackatimeUserId]: data.userId,
+      },
+      typecast: true,
+    }),
+  })
+}
+
+async function deleteRecords(
+  cfg: AirtableConfig,
+  tableName: string,
+  ids: string[]
+): Promise<void> {
+  const table = encodeURIComponent(tableName)
+  for (const group of chunk(ids, 10)) {
+    const query = group
+      .map((id) => `records[]=${encodeURIComponent(id)}`)
+      .join('&')
+    await airtableFetch(cfg, `${table}?${query}`, { method: 'DELETE' })
+  }
+}
+
+export interface ProjectSnapshot {
+  name: string
+  seconds: number
+}
+
+/**
+ * Replace a user's Hackatime Projects rows with a fresh snapshot: delete the
+ * existing linked rows, then create the new ones. Matches the "snapshot at
+ * submit, re-sync overwrites" behaviour.
+ */
+export async function replaceUserProjects(
+  cfg: AirtableConfig,
+  userRecordId: string,
+  existingProjectIds: string[],
+  projects: ProjectSnapshot[]
+): Promise<void> {
+  const table = encodeURIComponent(cfg.tables.hackatimeProjects)
+
+  if (existingProjectIds.length > 0) {
+    await deleteRecords(cfg, cfg.tables.hackatimeProjects, existingProjectIds)
+  }
+
+  for (const group of chunk(projects, 10)) {
+    const records = group.map((p) => ({
+      fields: {
+        [PROJECT_FIELDS.name]: p.name,
+        [PROJECT_FIELDS.time]: p.seconds,
+        [PROJECT_FIELDS.user]: [userRecordId],
+      },
+    }))
+    await airtableFetch(cfg, table, {
+      method: 'POST',
+      body: JSON.stringify({ records, typecast: true }),
+    })
+  }
+}
+
+/** Read the linked Hackatime Projects record ids from a User record. */
+export function projectIdsOf(record: AirtableRecord): string[] {
+  const ids = record.fields[USER_FIELDS.hackatimeProjects]
+  return Array.isArray(ids) ? (ids as string[]) : []
 }

@@ -14,7 +14,7 @@ const ENV_KEYS = [
   'FERRY_AIRTABLE_API_KEY',
   'FERRY_AIRTABLE_BASE_ID',
   'FERRY_FILLOUT_FORM_URL',
-  'FERRY_SESSION_SECRET',
+  'FERRY_SECRET',
 ]
 
 const saved: Record<string, string | undefined> = {}
@@ -46,7 +46,7 @@ function validOverrides() {
     },
     airtable: { apiKey: 'key', baseId: 'appABC' },
     fillout: { formUrl: 'https://forms.example.com/x' },
-    session: { secret: SECRET },
+    secret: SECRET,
   }
 }
 
@@ -114,7 +114,7 @@ describe('validateConfig()', () => {
     const problems = validateConfig(resolveConfig())
     expect(problems.length).toBeGreaterThan(0)
     expect(problems.join('\n')).toContain('hackClubAuth.clientId')
-    expect(problems.join('\n')).toContain('session.secret')
+    expect(problems.join('\n')).toContain('secret (FERRY_SECRET)')
   })
 
   it('passes with a complete config', () => {
@@ -129,11 +129,8 @@ describe('validateConfig()', () => {
     expect(validateConfig(cfg)).toEqual([])
   })
 
-  it('rejects a too-short session secret', () => {
-    const cfg = resolveConfig({
-      ...validOverrides(),
-      session: { secret: 'short' },
-    })
+  it('rejects a too-short secret', () => {
+    const cfg = resolveConfig({ ...validOverrides(), secret: 'short' })
     expect(validateConfig(cfg).join('\n')).toContain('at least 32 characters')
   })
 })

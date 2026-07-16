@@ -14,6 +14,11 @@ export interface FerryConfig {
   /** Path prefix Ferry is mounted at. Env: `FERRY_BASE_PATH`. Default `/submit`. */
   basePath?: string
 
+  /** Master secret (>= 32 chars) used to derive all encryption keys — the
+   * session cookie and the at-rest Hackatime token. Env: `FERRY_SECRET`.
+   * Generate with `openssl rand -hex 32`. */
+  secret?: string
+
   hackClubAuth?: {
     /** Env: `FERRY_HCA_CLIENT_ID`. */
     clientId?: string
@@ -59,9 +64,6 @@ export interface FerryConfig {
   }
 
   session?: {
-    /** Secret used to derive the cookie encryption key (>= 32 chars).
-     * Env: `FERRY_SESSION_SECRET`. */
-    secret?: string
     /** Cookie name. Default `ferry_session`. */
     cookieName?: string
     /** Session lifetime in seconds. Default 3600. */
@@ -80,6 +82,8 @@ export interface SessionData {
   pending?: 'hackclub' | 'hackatime'
   /** The Airtable `User` row's `auth_token`, once known. */
   authToken?: string
+  /** The Airtable `User` record id, once the row is upserted. */
+  userRecordId?: string
   /** Expiry (epoch seconds); set on commit, checked on read. */
   exp?: number
 }

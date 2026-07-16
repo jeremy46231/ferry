@@ -71,11 +71,15 @@ export function createFerry(options: FerryConfig = {}): Ferry {
 
         // Secret is guaranteed present by validateConfig above; re-checked here
         // to satisfy the type checker (belt-and-suspenders).
-        const secret = config.session.secret
+        const secret = config.secret
         if (!secret) return textResponse(500, 'Ferry is misconfigured.')
         const session = getSessionStore(secret)
 
-        return await handleFerryRequest(request, url, { config, session })
+        return await handleFerryRequest(request, url, {
+          config,
+          secret,
+          session,
+        })
       } catch (err) {
         console.error('[ferry] unhandled error in handle():', err)
         return textResponse(500, 'Ferry encountered an internal error.')
