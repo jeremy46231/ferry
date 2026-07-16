@@ -1,0 +1,15 @@
+{
+  "name": "ferry-sandbox-vite",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "ferry": "file:../../ferry.tgz"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "vite": "^8.1.4"
+  }
+}

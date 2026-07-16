@@ -1,12 +1,23 @@
 node_modules
 dist
-playground
+
+# packed tarball the sandboxes install (regenerate with: bun run build && bun pm pack)
+*.tgz
 
 # secrets / local env
 .env
 .env.*
 !.env.example
+.dev.vars
+.dev.vars.*
 tmp*
+
+# framework build output (sandboxes)
+.svelte-kit
+.next
+.vercel
+.wrangler
+sandbox/**/dist
 
 # misc
 *.log

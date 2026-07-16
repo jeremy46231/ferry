@@ -35,16 +35,16 @@ Config comes from `FERRY_*` environment variables, overridable via
 `createFerry({ ... })`. See [`.env.example`](./.env.example) for the full list;
 the essentials:
 
-| Variable | Notes |
-| --- | --- |
-| `FERRY_SECRET` | Master secret, ≥32 chars (`openssl rand -hex 32`). Derives all encryption keys. |
-| `FERRY_BASE_URL` | Public origin, for building OAuth redirect URIs. |
-| `FERRY_HCA_CLIENT_ID` / `_SECRET` | Hack Club Auth OAuth app. |
-| `FERRY_HACKATIME_MODE` | `required` or `off`. |
-| `FERRY_HACKATIME_CLIENT_ID` / `_SECRET` | Hackatime OAuth app (when not `off`). |
-| `FERRY_AIRTABLE_API_KEY` / `FERRY_AIRTABLE_BASE_ID` | Airtable token + base. |
-| `FERRY_FILLOUT_FORM_URL` | Where submitters are sent to finish. |
-| `FERRY_EVENT_START_DATE` | Optional `YYYY-MM-DD`; scopes Hackatime time to on/after this date. |
+| Variable                                            | Notes                                                                           |
+| --------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `FERRY_SECRET`                                      | Master secret, ≥32 chars (`openssl rand -hex 32`). Derives all encryption keys. |
+| `FERRY_BASE_URL`                                    | Public origin, for building OAuth redirect URIs.                                |
+| `FERRY_HCA_CLIENT_ID` / `_SECRET`                   | Hack Club Auth OAuth app.                                                       |
+| `FERRY_HACKATIME_MODE`                              | `required` or `off`.                                                            |
+| `FERRY_HACKATIME_CLIENT_ID` / `_SECRET`             | Hackatime OAuth app (when not `off`).                                           |
+| `FERRY_AIRTABLE_API_KEY` / `FERRY_AIRTABLE_BASE_ID` | Airtable token + base.                                                          |
+| `FERRY_FILLOUT_FORM_URL`                            | Where submitters are sent to finish.                                            |
+| `FERRY_EVENT_START_DATE`                            | Optional `YYYY-MM-DD`; scopes Hackatime time to on/after this date.             |
 
 Register your OAuth callbacks at `<FERRY_BASE_URL><basePath>/hackclub/callback`
 and `.../hackatime/callback` (default `basePath` is `/submit`).
@@ -61,5 +61,21 @@ bun run check       # biome lint + format + import sorting (check only)
 bun run check:fix   # biome, with autofixes applied
 ```
 
-There's a manual test harness in `playground/` (gitignored) — a Vite dev server
-that mounts Ferry at `/submit`. See `playground/README.md`.
+Integration sandboxes live in `sandbox/` — one per host (`vite`, `sveltekit`,
+`nextjs`, `workers`), each mounting Ferry at `/submit` on port 5173. They install
+Ferry from a packed tarball: run `bun run pack:sandbox` (build + pack
+`ferry.tgz`) at the repo root, then `bun install` in a sandbox. See each
+sandbox's `README.md`.
+
+Wiring Ferry into a host is a line or two:
+
+| Host                          | Integration                                                            |
+| ----------------------------- | ---------------------------------------------------------------------- |
+| Node (Vite/Express/Connect)   | `server.middlewares.use(ferry.middleware())`                           |
+| SvelteKit (`hooks.server.ts`) | `(await ferry.handle(event.request)) ?? resolve(event)`                |
+| Next.js (catch-all route)     | `(await ferry.handle(request)) ?? new Response(null, { status: 404 })` |
+| Cloudflare Workers (`fetch`)  | `(await ferry.handle(request)) ?? env.ASSETS.fetch(request)`           |
+
+Web-native hosts call `handle(request)` directly; Node servers use the
+`middleware()` adapter. Runtimes without `process.env` (Workers) pass the env
+bag: `createFerry({ env })`.

@@ -229,14 +229,15 @@ prefill mapping to maintain.
 ```
 ferry/                 # the npm package (this repo)
   src/
-    index.ts           # createFerry + handle()
+    index.ts           # createFerry -> { handle, middleware, config }
     router.ts          # the state machine (only stateful logic)
-    config.ts          # safe env reading + override merge + validation
+    config.ts          # safe env reading (+ explicit env bag) + merge + validation
     crypto.ts          # HKDF subkeys + AES-GCM createCipher(secret, purpose)
     session.ts         # encrypted session cookie (uses crypto.ts)
     random.ts          # randomHex / randomToken
     oauth.ts           # generic OAuth2 authorization-code client (no PKCE)
     pages.ts           # minimal built-in HTML + text responses
+    node.ts            # Connect (req,res,next) adapter -> ferry.middleware()
     airtable.ts        # REST client: upsert user, sync projects
     providers/
       hackclub.ts      # /api/v1/me, eligibility
@@ -244,8 +245,20 @@ ferry/                 # the npm package (this repo)
     types.ts           # FerryConfig, SessionData
   package.json         # bun, tsdown build, ESM+CJS exports, types
   biome.json, tsconfig.json, tsconfig.test.json, tsdown.config.ts
-playground/            # gitignored — Vite + a server mounting ferry at /submit/*
+sandbox/               # one integration harness per host, all on :5173 (creds
+  vite/                #   gitignored). vite uses ferry.middleware(); web-native
+  sveltekit/           #   hosts call ferry.handle() directly (SvelteKit hook,
+  nextjs/              #   Next catch-all route, Worker fetch). Each installs
+  workers/             #   ferry from a packed tarball (bun run pack:sandbox).
 ```
+
+## Host integration
+
+`handle(Request): Promise<Response | null>` is the core; web-native hosts call it
+directly. Node servers use `ferry.middleware()`, a Connect `(req, res, next)`
+adapter. Runtimes without `process.env` (Workers) pass config via an env bag:
+`createFerry({ env })`, consulted before `process.env`. The `sandbox/` dir has a
+minimal working example for each.
 
 ## Status
 
@@ -253,7 +266,8 @@ Steps 1–6 are implemented and tested (unit + integration with mocked `fetch`);
 the full flow runs end to end: **HCA → eligibility → Airtable upsert → Hackatime
 (reuse-or-connect) → project sync → Fillout**. Session cookie and the at-rest
 Hackatime token are encrypted from one HKDF-derived master secret. The
-`playground/` harness drives it against the dev creds.
+`sandbox/` harnesses (Vite, SvelteKit, Next.js, Cloudflare Workers) drive it
+against the dev creds.
 
 ## Open items
 
@@ -262,4 +276,3 @@ Hackatime token are encrypted from one HKDF-derived master secret. The
 - `pending` verification handling — blocked vs. allowed (currently blocked).
 - `baseUrl` behind proxies — prefer explicit `FERRY_BASE_URL`; request-origin
   fallback for local/dev.
-- Framework adapter sugar + a README usage section for common hosts.

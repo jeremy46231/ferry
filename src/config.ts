@@ -3,11 +3,17 @@ import type { FerryConfig } from './types'
 /**
  * Read an environment variable without ever throwing.
  *
- * Works on Node/Bun/Deno (via `process.env`). On runtimes without a `process`
- * global (edge/workers), it simply returns `undefined` — those hosts are
- * expected to pass config explicitly to {@link createFerry}.
+ * Checks the explicit `bag` first (e.g. a Cloudflare Workers `env`), then falls
+ * back to `process.env`. On runtimes without a `process` global and no bag, it
+ * simply returns `undefined` — those hosts pass config explicitly to
+ * {@link createFerry}.
  */
-export function env(key: string): string | undefined {
+export function env(
+  key: string,
+  bag?: Record<string, string | undefined>
+): string | undefined {
+  const fromBag = bag?.[key]
+  if (typeof fromBag === 'string' && fromBag.length > 0) return fromBag
   try {
     const p = (globalThis as { process?: { env?: Record<string, unknown> } })
       .process
@@ -100,42 +106,44 @@ function normalizeBasePath(input: string | undefined): string {
  * Explicit values win over env. Never throws.
  */
 export function resolveConfig(input: FerryConfig = {}): ResolvedConfig {
+  const read = (key: string) => env(key, input.env)
+
   const hackatimeMode: 'required' | 'off' =
     input.hackatime?.mode ??
-    (env('FERRY_HACKATIME_MODE') === 'off' ? 'off' : 'required')
+    (read('FERRY_HACKATIME_MODE') === 'off' ? 'off' : 'required')
 
   return {
-    baseUrl: input.baseUrl ?? env('FERRY_BASE_URL'),
-    basePath: normalizeBasePath(input.basePath ?? env('FERRY_BASE_PATH')),
-    secret: input.secret ?? env('FERRY_SECRET'),
-    eventStartDate: input.eventStartDate ?? env('FERRY_EVENT_START_DATE'),
+    baseUrl: input.baseUrl ?? read('FERRY_BASE_URL'),
+    basePath: normalizeBasePath(input.basePath ?? read('FERRY_BASE_PATH')),
+    secret: input.secret ?? read('FERRY_SECRET'),
+    eventStartDate: input.eventStartDate ?? read('FERRY_EVENT_START_DATE'),
 
     hackClubAuth: {
-      clientId: input.hackClubAuth?.clientId ?? env('FERRY_HCA_CLIENT_ID'),
+      clientId: input.hackClubAuth?.clientId ?? read('FERRY_HCA_CLIENT_ID'),
       clientSecret:
-        input.hackClubAuth?.clientSecret ?? env('FERRY_HCA_CLIENT_SECRET'),
+        input.hackClubAuth?.clientSecret ?? read('FERRY_HCA_CLIENT_SECRET'),
       scopes: toScopes(
         input.hackClubAuth?.scopes,
-        env('FERRY_HCA_SCOPES'),
+        read('FERRY_HCA_SCOPES'),
         DEFAULT_HCA_SCOPES
       ),
     },
 
     hackatime: {
       mode: hackatimeMode,
-      clientId: input.hackatime?.clientId ?? env('FERRY_HACKATIME_CLIENT_ID'),
+      clientId: input.hackatime?.clientId ?? read('FERRY_HACKATIME_CLIENT_ID'),
       clientSecret:
-        input.hackatime?.clientSecret ?? env('FERRY_HACKATIME_CLIENT_SECRET'),
+        input.hackatime?.clientSecret ?? read('FERRY_HACKATIME_CLIENT_SECRET'),
       scopes: toScopes(
         input.hackatime?.scopes,
-        env('FERRY_HACKATIME_SCOPES'),
+        read('FERRY_HACKATIME_SCOPES'),
         DEFAULT_HACKATIME_SCOPES
       ),
     },
 
     airtable: {
-      apiKey: input.airtable?.apiKey ?? env('FERRY_AIRTABLE_API_KEY'),
-      baseId: input.airtable?.baseId ?? env('FERRY_AIRTABLE_BASE_ID'),
+      apiKey: input.airtable?.apiKey ?? read('FERRY_AIRTABLE_API_KEY'),
+      baseId: input.airtable?.baseId ?? read('FERRY_AIRTABLE_BASE_ID'),
       tables: {
         users: input.airtable?.tables?.users ?? 'User',
         hackatimeProjects:
@@ -147,7 +155,7 @@ export function resolveConfig(input: FerryConfig = {}): ResolvedConfig {
     },
 
     fillout: {
-      formUrl: input.fillout?.formUrl ?? env('FERRY_FILLOUT_FORM_URL'),
+      formUrl: input.fillout?.formUrl ?? read('FERRY_FILLOUT_FORM_URL'),
       linkingKeyParam: input.fillout?.linkingKeyParam ?? 'auth_token',
     },
 

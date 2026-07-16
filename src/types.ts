@@ -14,6 +14,11 @@ export interface FerryConfig {
   /** Path prefix Ferry is mounted at. Env: `FERRY_BASE_PATH`. Default `/submit`. */
   basePath?: string
 
+  /** Explicit environment bag to read `FERRY_*` values from, consulted before
+   * `globalThis.process.env`. Supply this on runtimes without `process`
+   * (Cloudflare Workers, other edges) — e.g. `createFerry({ env })`. */
+  env?: Record<string, string | undefined>
+
   /** Master secret (>= 32 chars) used to derive all encryption keys — the
    * session cookie and the at-rest Hackatime token. Env: `FERRY_SECRET`.
    * Generate with `openssl rand -hex 32`. */

@@ -24,6 +24,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
+    "pack:sandbox": "tsdown && bun pm pack && mv -f ferry-*.tgz ferry.tgz",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest",
