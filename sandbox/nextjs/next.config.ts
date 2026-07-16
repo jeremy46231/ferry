@@ -2,9 +2,11 @@ import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // ferry (file:../..) symlinks to the repo root, which itself contains this
-  // sandbox — pin the workspace root so Next doesn't get confused by the
-  // extra bun.lock it finds while walking up from that symlink.
+  // Import Ferry's TS source (../../src, aliased to `ferry` in tsconfig) from
+  // outside this app's directory.
+  experimental: { externalDir: true },
+  // Pin the workspace root so Next doesn't warn about the repo-root lockfile
+  // it finds while walking up.
   outputFileTracingRoot: path.join(__dirname),
 };
 

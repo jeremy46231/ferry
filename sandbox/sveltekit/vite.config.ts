@@ -3,7 +3,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	server: { port: 5173, strictPort: true },
+	// allow serving Ferry's source from the repo root (imported by hooks.server.ts)
+	server: { port: 5173, strictPort: true, fs: { allow: ['../..'] } },
 	plugins: [
 		sveltekit({
 			compilerOptions: {

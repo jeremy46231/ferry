@@ -1,4 +1,4 @@
-import { createFerry } from 'ferry'
+import { createFerry } from '../../../src/index'
 
 export interface Env {
   ASSETS: Fetcher

@@ -21,11 +21,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 ## Run
 
-From the repo root (sets up every sandbox — build + pack ferry, copy `.env`,
-install — then start this one):
+From the repo root (copies the root `.env` into every sandbox and installs):
 
 ```sh
-bun run sandbox:setup      # once; also refreshes after library changes
+bun run sandbox:setup      # once (or after adding a dependency)
 bun run sandbox:sveltekit  # http://localhost:5173
 ```
 
@@ -34,5 +33,9 @@ and installs), then `bun run dev`.
 
 Open <http://localhost:5173>, click **Start submission →**, and you'll go
 through Hack Club Auth → Hackatime → Fillout. Creds come from the repo-root
-`.env` (gitignored); Ferry installs from the packed tarball, which `setup`
-re-extracts after library changes.
+`.env` (gitignored).
+
+> This sandbox imports Ferry's TypeScript source directly (the hook uses
+> `../../../src/index`), so library edits hot-reload — no build or publish step.
+> (In a real app you'd `npm i ferry` and `import { createFerry } from 'ferry'`,
+> as shown above.)

@@ -3,11 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "setup": "cp ../../.env .dev.vars && bun install --force",
+    "setup": "cp ../../.env .dev.vars && bun install",
     "dev": "wrangler dev --port 5173"
-  },
-  "dependencies": {
-    "ferry": "file:../../ferry.tgz"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

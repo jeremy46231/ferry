@@ -1,9 +1,6 @@
 node_modules
 dist
 
-# packed tarball the sandboxes install (regenerate with: bun run build && bun pm pack)
-*.tgz
-
 # secrets / local env
 .env
 .env.*

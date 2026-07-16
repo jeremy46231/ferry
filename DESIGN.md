@@ -248,8 +248,8 @@ ferry/                 # the npm package (this repo)
 sandbox/               # one integration harness per host, all on :5173 (creds
   vite/                #   gitignored). vite uses ferry.middleware(); web-native
   sveltekit/           #   hosts call ferry.handle() directly (SvelteKit hook,
-  nextjs/              #   Next catch-all route, Worker fetch). Each installs
-  workers/             #   ferry from a packed tarball (bun run pack:sandbox).
+  nextjs/              #   Next catch-all route, Worker fetch). Each imports the
+  workers/             #   library's src/ directly (bun run sandbox:setup).
 ```
 
 ## Host integration

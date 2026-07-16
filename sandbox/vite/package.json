@@ -3,11 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "setup": "cp ../../.env .env && bun install --force",
+    "setup": "cp ../../.env .env && bun install",
     "dev": "vite"
-  },
-  "dependencies": {
-    "ferry": "file:../../ferry.tgz"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

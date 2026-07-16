@@ -3,14 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "setup": "cp ../../.env .env.local && bun install --force",
+    "setup": "cp ../../.env .env.local && bun install",
     "dev": "next dev -p 5173 --webpack"
   },
   "dependencies": {
     "next": "16.2.10",
     "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "ferry": "file:../../ferry.tgz"
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@types/node": "^20",

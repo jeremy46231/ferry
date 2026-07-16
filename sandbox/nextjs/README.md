@@ -31,11 +31,10 @@ plain `http://localhost`. Ferry reads the rest of its config (`FERRY_*`) from
 
 ## Running it
 
-From the repo root (sets up every sandbox — build + pack ferry, copy `.env`,
-install — then start this one):
+From the repo root (copies the root `.env` into every sandbox and installs):
 
 ```bash
-bun run sandbox:setup    # once; also refreshes after library changes
+bun run sandbox:setup    # once (or after adding a dependency)
 bun run sandbox:nextjs   # http://localhost:5173
 ```
 
@@ -44,16 +43,17 @@ Or from this directory: `bun run setup` (copies the root `.env` here as
 
 The `dev` script runs `next dev -p 5173 --webpack`, forced onto port 5173 (all
 Ferry sandboxes share that port and run one at a time) and onto webpack instead
-of Turbopack, which keeps resolution of the local `file:` tarball dependency
-hassle-free. `next.config.ts`'s `outputFileTracingRoot` silences the
-workspace-root warning from having a lockfile above this directory.
+of Turbopack, which resolves the source dependency more predictably.
+`next.config.ts`'s `outputFileTracingRoot` silences the workspace-root warning
+from having a lockfile above this directory.
 
 ## Consuming Ferry
 
-This sandbox installs Ferry from a packed tarball (`"ferry":
-"file:../../ferry.tgz"`) — the actual published artifact, built from the repo
-root's `dist/`. `bun run sandbox:setup` at the repo root re-packs and
-re-installs it after library changes.
+This sandbox imports Ferry's TypeScript source directly, so library edits
+hot-reload — no build or publish step. `tsconfig.json` aliases `ferry` →
+`../../src/index.ts` (so the route reads `import … from 'ferry'` like a real
+app) and `next.config.ts` sets `experimental.externalDir` to compile source
+from outside this directory.
 
 `.env.local` comes from the repo-root `.env` (copied by `setup`) and is
 gitignored.

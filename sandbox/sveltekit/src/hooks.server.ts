@@ -1,4 +1,4 @@
-import { createFerry } from 'ferry'
+import { createFerry } from '../../../src/index'
 import type { Handle } from '@sveltejs/kit'
 import { env } from '$env/dynamic/private'
 

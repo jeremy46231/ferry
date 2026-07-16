@@ -5,10 +5,11 @@ static assets binding.
 
 ## Integration
 
-The entire integration is `src/index.ts`:
+The entire integration is `src/index.ts` (imports the local source; a real app
+would `import { createFerry } from 'ferry'`):
 
 ```ts
-import { createFerry } from 'ferry'
+import { createFerry } from '../../../src/index'
 
 export interface Env {
   ASSETS: Fetcher
@@ -29,11 +30,10 @@ gets a chance to handle it before falling back to the static file server.
 
 ## Running
 
-From the repo root (sets up every sandbox — build + pack ferry, copy `.env`,
-install — then start this one):
+From the repo root (copies the root `.env` into every sandbox and installs):
 
 ```sh
-bun run sandbox:setup    # once; also refreshes after library changes
+bun run sandbox:setup    # once (or after adding a dependency)
 bun run sandbox:workers  # http://localhost:5173
 ```
 
@@ -44,8 +44,9 @@ Then open http://localhost:5173. Secrets (`FERRY_*`) live in `.dev.vars`,
 which Wrangler loads automatically in dev — Workers have no `process.env`, so
 they're passed explicitly via `createFerry({ env })`.
 
-## Updating Ferry
+## Consuming Ferry
 
-This project installs Ferry from a packed tarball (`"ferry":
-"file:../../ferry.tgz"`). `bun run sandbox:setup` at the repo root re-packs and
-re-installs it (bun caches the tarball, so `setup` uses `--force` to re-extract).
+This sandbox imports Ferry's TypeScript source directly (`../../../src/index`),
+which Wrangler bundles with esbuild — so library edits are picked up on the next
+`wrangler dev` rebuild, no build or publish step. (In a real app you'd
+`npm i ferry` and `import { createFerry } from 'ferry'`.)
