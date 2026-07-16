@@ -1,0 +1,12 @@
+node_modules
+dist
+playground
+
+# secrets / local env
+.env
+.env.*
+tmp*
+
+# misc
+*.log
+.DS_Store
