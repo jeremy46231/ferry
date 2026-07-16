@@ -10,7 +10,7 @@ import type { FerryConfig } from './types'
  */
 export function env(
   key: string,
-  bag?: Record<string, string | undefined>
+  bag?: Record<string, unknown>
 ): string | undefined {
   const fromBag = bag?.[key]
   if (typeof fromBag === 'string' && fromBag.length > 0) return fromBag

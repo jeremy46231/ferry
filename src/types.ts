@@ -16,8 +16,10 @@ export interface FerryConfig {
 
   /** Explicit environment bag to read `FERRY_*` values from, consulted before
    * `globalThis.process.env`. Supply this on runtimes without `process`
-   * (Cloudflare Workers, other edges) — e.g. `createFerry({ env })`. */
-  env?: Record<string, string | undefined>
+   * (Cloudflare Workers, other edges) — e.g. `createFerry({ env })`. Values are
+   * `unknown` so a Cloudflare `Env` (mixing string vars with bindings) can be
+   * passed as-is; only string entries are read. */
+  env?: Record<string, unknown>
 
   /** Master secret (>= 32 chars) used to derive all encryption keys — the
    * session cookie and the at-rest Hackatime token. Env: `FERRY_SECRET`.

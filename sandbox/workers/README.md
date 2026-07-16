@@ -46,5 +46,5 @@ This project installs Ferry from a packed tarball (`"ferry":
 
 ```sh
 (cd ../.. && bun run pack:sandbox)
-bun install
+bun install --force   # bun caches the tarball; --force re-extracts it
 ```

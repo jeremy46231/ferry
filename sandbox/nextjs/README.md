@@ -49,7 +49,8 @@ from having a lockfile above this directory.
 This sandbox installs Ferry from a packed tarball (`"ferry":
 "file:../../ferry.tgz"`) — the actual published artifact, built from the repo
 root's `dist/`. If you change Ferry's source, re-run `bun run pack:sandbox` at
-the repo root, `bun install` here, and restart `bun run dev`.
+the repo root, `bun install --force` here (bun caches the tarball, so `--force`
+re-extracts it), and restart `bun run dev`.
 
 `.env.local` is a copy of the shared sandbox dev credentials
 (`sandbox/vite/.env`) and is gitignored.
