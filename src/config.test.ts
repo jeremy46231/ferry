@@ -15,6 +15,7 @@ const ENV_KEYS = [
   'FERRY_AIRTABLE_BASE_ID',
   'FERRY_FILLOUT_FORM_URL',
   'FERRY_SECRET',
+  'FERRY_EVENT_START_DATE',
 ]
 
 const saved: Record<string, string | undefined> = {}
@@ -132,5 +133,18 @@ describe('validateConfig()', () => {
   it('rejects a too-short secret', () => {
     const cfg = resolveConfig({ ...validOverrides(), secret: 'short' })
     expect(validateConfig(cfg).join('\n')).toContain('at least 32 characters')
+  })
+
+  it('accepts a well-formed eventStartDate and rejects a malformed one', () => {
+    const ok = resolveConfig({
+      ...validOverrides(),
+      eventStartDate: '2026-07-09',
+    })
+    expect(validateConfig(ok)).toEqual([])
+    const bad = resolveConfig({
+      ...validOverrides(),
+      eventStartDate: '07/09/2026',
+    })
+    expect(validateConfig(bad).join('\n')).toContain('eventStartDate')
   })
 })

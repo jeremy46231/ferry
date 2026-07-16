@@ -203,7 +203,8 @@ async function advanceAfterUser(
         await syncHackatimeProjects(
           requireAirtable(config),
           ctx.recordId,
-          token
+          token,
+          config.eventStartDate
         )
         return finishToFillout(deps, ctx.authToken)
       } catch {
@@ -298,18 +299,25 @@ async function hackatimeCallback(
     token: encryptedToken,
     userId: htUser.id,
   })
-  await syncHackatimeProjects(airtable, sess.userRecordId, token.access_token)
+  await syncHackatimeProjects(
+    airtable,
+    sess.userRecordId,
+    token.access_token,
+    config.eventStartDate
+  )
 
   return finishToFillout(deps, sess.authToken)
 }
 
-/** Fetch the user's non-archived Hackatime projects and overwrite their rows. */
+/** Fetch the user's non-archived Hackatime projects and overwrite their rows.
+ * When `startDate` is set, time is counted only on/after that date. */
 async function syncHackatimeProjects(
   airtable: AirtableConfig,
   recordId: string,
-  hackatimeToken: string
+  hackatimeToken: string,
+  startDate?: string
 ): Promise<void> {
-  const projects = await fetchProjects(hackatimeToken)
+  const projects = await fetchProjects(hackatimeToken, { startDate })
   const user = await getUser(airtable, recordId)
   await replaceUserProjects(
     airtable,

@@ -19,6 +19,11 @@ export interface FerryConfig {
    * Generate with `openssl rand -hex 32`. */
   secret?: string
 
+  /** Event start date (`YYYY-MM-DD`). When set, Hackatime project data only
+   * counts time on/after this date, and only projects with activity since then
+   * are included. Env: `FERRY_EVENT_START_DATE`. */
+  eventStartDate?: string
+
   hackClubAuth?: {
     /** Env: `FERRY_HCA_CLIENT_ID`. */
     clientId?: string

@@ -25,6 +25,7 @@ export interface ResolvedConfig {
   baseUrl?: string
   basePath: string
   secret?: string
+  eventStartDate?: string
   hackClubAuth: {
     clientId?: string
     clientSecret?: string
@@ -107,6 +108,7 @@ export function resolveConfig(input: FerryConfig = {}): ResolvedConfig {
     baseUrl: input.baseUrl ?? env('FERRY_BASE_URL'),
     basePath: normalizeBasePath(input.basePath ?? env('FERRY_BASE_PATH')),
     secret: input.secret ?? env('FERRY_SECRET'),
+    eventStartDate: input.eventStartDate ?? env('FERRY_EVENT_START_DATE'),
 
     hackClubAuth: {
       clientId: input.hackClubAuth?.clientId ?? env('FERRY_HCA_CLIENT_ID'),
@@ -189,6 +191,10 @@ export function validateConfig(cfg: ResolvedConfig): string[] {
     missing.push('secret (FERRY_SECRET)')
   } else if (cfg.secret.length < 32) {
     missing.push('secret must be at least 32 characters')
+  }
+
+  if (cfg.eventStartDate && !/^\d{4}-\d{2}-\d{2}$/.test(cfg.eventStartDate)) {
+    missing.push('eventStartDate must be YYYY-MM-DD (FERRY_EVENT_START_DATE)')
   }
 
   return missing

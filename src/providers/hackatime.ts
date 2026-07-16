@@ -68,17 +68,40 @@ export function fetchHackatimeUser(
   return get<HackatimeUser>(ME_ENDPOINT, accessToken)
 }
 
-/** Fetch the user's projects. Archived projects are excluded by default. */
+export interface FetchProjectsOptions {
+  /** Include archived projects (default false). */
+  includeArchived?: boolean
+  /** Event start date (`YYYY-MM-DD`). Crops each project's counted time to
+   * on/after this date (`start`) and limits discovery to projects active since
+   * then (`since`). */
+  startDate?: string
+}
+
+/**
+ * Fetch the user's projects. Archived projects are excluded by default. When
+ * `startDate` is given, time is counted only on/after that date and projects
+ * with no activity in range are dropped.
+ */
 export async function fetchProjects(
   accessToken: string,
-  includeArchived = false
+  opts: FetchProjectsOptions = {}
 ): Promise<HackatimeProject[]> {
-  const url = includeArchived
-    ? `${PROJECTS_ENDPOINT}?include_archived=true`
-    : PROJECTS_ENDPOINT
+  const params = new URLSearchParams()
+  if (opts.includeArchived) params.set('include_archived', 'true')
+  if (opts.startDate) {
+    // `since` scopes which projects are discovered; `start` crops total_seconds.
+    params.set('since', opts.startDate)
+    params.set('start', opts.startDate)
+  }
+  const qs = params.toString()
+  const url = qs ? `${PROJECTS_ENDPOINT}?${qs}` : PROJECTS_ENDPOINT
+
   const data = await get<ProjectsResponse>(url, accessToken)
-  const projects = data.projects ?? []
-  return includeArchived ? projects : projects.filter((p) => !p.archived)
+  let projects = data.projects ?? []
+  if (!opts.includeArchived) projects = projects.filter((p) => !p.archived)
+  // With a start date, drop projects that have no time in the window.
+  if (opts.startDate) projects = projects.filter((p) => p.total_seconds > 0)
+  return projects
 }
 
 /** Require Hackatime client credentials from config. */

@@ -44,8 +44,26 @@ describe('fetchProjects()', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    const projects = await fetchProjects('ht-tok', true)
+    const projects = await fetchProjects('ht-tok', { includeArchived: true })
     expect(projects).toHaveLength(3)
+  })
+
+  it('sends since+start and drops zero-time projects when given a start date', async () => {
+    const fetchMock = vi.fn(async (input: string | URL | Request) => {
+      const u = new URL(String(input))
+      expect(u.searchParams.get('since')).toBe('2026-07-09')
+      expect(u.searchParams.get('start')).toBe('2026-07-09')
+      return json({
+        projects: [
+          { name: 'in-window', total_seconds: 120, archived: false },
+          { name: 'no-time-in-window', total_seconds: 0, archived: false },
+        ],
+      })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const projects = await fetchProjects('ht-tok', { startDate: '2026-07-09' })
+    expect(projects.map((p) => p.name)).toEqual(['in-window'])
   })
 
   it('throws on a non-ok response', async () => {
