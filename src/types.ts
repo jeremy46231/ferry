@@ -91,7 +91,7 @@ export interface SessionData {
   /** OAuth `state` for the in-flight authorization, if any. */
   state?: string
   /** Which provider the in-flight authorization is for. */
-  pending?: 'hackclub' | 'hackatime'
+  pending?: 'hca' | 'hackatime'
   /** The Airtable `User` row's `auth_token`, once known. */
   authToken?: string
   /** The Airtable `User` record id, once the row is upserted. */

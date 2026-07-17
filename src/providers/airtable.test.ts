@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { type AirtableConfig, findUserBySlackId, upsertUser } from './airtable'
-import type { HcaIdentity } from './hackclub'
+import type { HcaIdentity } from './hca'
 
 const cfg: AirtableConfig = {
   apiKey: 'key',

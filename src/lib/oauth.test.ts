@@ -22,7 +22,7 @@ describe('buildAuthorizeUrl()', () => {
   it('sets the standard authorization-code params', () => {
     const url = new URL(
       buildAuthorizeUrl(endpoints, {
-        redirectUri: 'https://app.example.com/submit/hackclub/callback',
+        redirectUri: 'https://app.example.com/submit/hca/callback',
         scopes: ['openid', 'name', 'slack_id'],
         state: 'state-123',
       })
@@ -33,7 +33,7 @@ describe('buildAuthorizeUrl()', () => {
     expect(url.searchParams.get('client_id')).toBe('client-abc')
     expect(url.searchParams.get('response_type')).toBe('code')
     expect(url.searchParams.get('redirect_uri')).toBe(
-      'https://app.example.com/submit/hackclub/callback'
+      'https://app.example.com/submit/hca/callback'
     )
     expect(url.searchParams.get('scope')).toBe('openid name slack_id')
     expect(url.searchParams.get('state')).toBe('state-123')

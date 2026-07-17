@@ -46,7 +46,7 @@ the essentials:
 | `FERRY_FILLOUT_FORM_URL`                            | Where submitters are sent to finish.                                            |
 | `FERRY_EVENT_START_DATE`                            | Optional `YYYY-MM-DD`; scopes Hackatime time to on/after this date.             |
 
-Register your OAuth callbacks at `<FERRY_BASE_URL><basePath>/hackclub/callback`
+Register your OAuth callbacks at `<FERRY_BASE_URL><basePath>/hca/callback`
 and `.../hackatime/callback` (default `basePath` is `/submit`).
 
 ## Development

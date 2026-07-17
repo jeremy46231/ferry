@@ -108,7 +108,7 @@ OAuth apps.
 | Route                            | Behavior                                                                                                                         |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `GET /submit`                    | Entry. No/expired session → start HCA. Else advance to next incomplete step. Returning users are recognized and re-run silently. |
-| `GET /submit/hackclub/callback`  | HCA `code`→token, fetch `/api/v1/me`, enforce eligibility (below), upsert `User` row (Ferry mints `Auth Token`). Decide Hackatime. |
+| `GET /submit/hca/callback`  | HCA `code`→token, fetch `/api/v1/me`, enforce eligibility (below), upsert `User` row (Ferry mints `Auth Token`). Decide Hackatime. |
 | `GET /submit/hackatime/callback` | Hackatime `code`→token, store encrypted `Hackatime Token` + `Hackatime User ID`, sync projects.                                   |
 | (internal) redirect to Fillout   | Build Fillout URL with the hidden linking key (`auth_token`), `302`.                                                             |
 

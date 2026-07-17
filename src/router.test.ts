@@ -74,7 +74,7 @@ describe('hack club auth start', () => {
     )
     expect(location.searchParams.get('client_id')).toBe('hca')
     expect(location.searchParams.get('redirect_uri')).toBe(
-      'https://app.example.com/submit/hackclub/callback'
+      'https://app.example.com/submit/hca/callback'
     )
     expect(location.searchParams.get('scope')).toContain('basic_info')
     expect(state).toMatch(/^[0-9a-f]+$/)
@@ -87,7 +87,7 @@ describe('hack club auth callback', () => {
     const ferry = createFerry(config)
     const { cookie } = await startAuth(ferry)
     const res = await ferry.handle(
-      new Request(`${BASE}/submit/hackclub/callback?code=abc&state=wrong`, {
+      new Request(`${BASE}/submit/hca/callback?code=abc&state=wrong`, {
         headers: { cookie },
       })
     )
@@ -133,7 +133,7 @@ describe('hack club auth callback', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     const res = await ferry.handle(
-      new Request(`${BASE}/submit/hackclub/callback?code=abc&state=${state}`, {
+      new Request(`${BASE}/submit/hca/callback?code=abc&state=${state}`, {
         headers: { cookie },
       })
     )
@@ -162,7 +162,7 @@ describe('hack club auth callback', () => {
     )
 
     const res = await ferry.handle(
-      new Request(`${BASE}/submit/hackclub/callback?code=abc&state=${state}`, {
+      new Request(`${BASE}/submit/hca/callback?code=abc&state=${state}`, {
         headers: { cookie },
       })
     )
@@ -190,7 +190,7 @@ describe('hack club auth callback', () => {
     )
 
     const res = await ferry.handle(
-      new Request(`${BASE}/submit/hackclub/callback?code=abc&state=${state}`, {
+      new Request(`${BASE}/submit/hca/callback?code=abc&state=${state}`, {
         headers: { cookie },
       })
     )
@@ -206,7 +206,7 @@ describe('hackatime flow', () => {
   }
 
   /** Mock the Hack Club callback for a brand-new user (no Hackatime token). */
-  function hackclubNewUserMock() {
+  function hcaNewUserMock() {
     return vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
       const url = String(input)
       if (url.includes('auth.hackclub.com') && url.endsWith('/oauth/token')) {
@@ -238,10 +238,10 @@ describe('hackatime flow', () => {
   it('redirects a user with no Hackatime token to Hackatime OAuth', async () => {
     const ferry = createFerry(htConfig)
     const { state, cookie } = await startAuth(ferry)
-    vi.stubGlobal('fetch', hackclubNewUserMock())
+    vi.stubGlobal('fetch', hcaNewUserMock())
 
     const res = await ferry.handle(
-      new Request(`${BASE}/submit/hackclub/callback?code=abc&state=${state}`, {
+      new Request(`${BASE}/submit/hca/callback?code=abc&state=${state}`, {
         headers: { cookie },
       })
     )
@@ -320,7 +320,7 @@ describe('hackatime flow', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     const res = await ferry.handle(
-      new Request(`${BASE}/submit/hackclub/callback?code=abc&state=${state}`, {
+      new Request(`${BASE}/submit/hca/callback?code=abc&state=${state}`, {
         headers: { cookie },
       })
     )
@@ -339,14 +339,11 @@ describe('hackatime flow', () => {
 
     // Drive through Hack Club to reach the Hackatime authorize redirect.
     const { state: hcState, cookie: hcCookie } = await startAuth(ferry)
-    vi.stubGlobal('fetch', hackclubNewUserMock())
+    vi.stubGlobal('fetch', hcaNewUserMock())
     const toHackatime = await ferry.handle(
-      new Request(
-        `${BASE}/submit/hackclub/callback?code=abc&state=${hcState}`,
-        {
-          headers: { cookie: hcCookie },
-        }
-      )
+      new Request(`${BASE}/submit/hca/callback?code=abc&state=${hcState}`, {
+        headers: { cookie: hcCookie },
+      })
     )
     const htState = new URL(
       toHackatime?.headers.get('location') as string

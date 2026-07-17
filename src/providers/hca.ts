@@ -17,7 +17,7 @@ export const HCA_VERIFICATION_URL =
   'https://auth.hackclub.com/verifications/new'
 
 /** Build the OAuth endpoint bundle for the token/authorize client. */
-export function hackclubEndpoints(
+export function hcaEndpoints(
   clientId: string,
   clientSecret: string
 ): OAuthEndpoints {
@@ -83,7 +83,7 @@ export async function fetchIdentity(accessToken: string): Promise<HcaIdentity> {
   })
   if (!res.ok) {
     const text = await res.text().catch(() => '')
-    throw new Error(`hackclub /api/v1/me failed (${res.status}): ${text}`)
+    throw new Error(`HCA /api/v1/me failed (${res.status}): ${text}`)
   }
   const data = (await res.json()) as MeResponse
   return { ...data.identity, scopes: data.scopes }
@@ -137,12 +137,10 @@ export function checkEligibility(identity: HcaIdentity): EligibilityResult {
 
 /** Require the HCA client credentials from config (guaranteed by validateConfig,
  * but narrowed here without a non-null assertion). */
-export function requireHackclubEndpoints(
-  config: ResolvedConfig
-): OAuthEndpoints {
+export function requireHcaEndpoints(config: ResolvedConfig): OAuthEndpoints {
   const { clientId, clientSecret } = config.hackClubAuth
   if (!clientId || !clientSecret) {
     throw new Error('Hack Club Auth client credentials are not configured')
   }
-  return hackclubEndpoints(clientId, clientSecret)
+  return hcaEndpoints(clientId, clientSecret)
 }

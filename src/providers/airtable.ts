@@ -1,6 +1,6 @@
 import type { ResolvedConfig } from '../config'
 import { randomToken } from '../lib/random'
-import type { HcaIdentity } from './hackclub'
+import type { HcaIdentity } from './hca'
 
 /**
  * Thin Airtable REST client (no SDK — just `fetch`, so it stays edge-safe).

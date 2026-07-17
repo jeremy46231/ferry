@@ -22,8 +22,8 @@ import {
   checkEligibility,
   fetchIdentity,
   HCA_VERIFICATION_URL,
-  requireHackclubEndpoints,
-} from './providers/hackclub'
+  requireHcaEndpoints,
+} from './providers/hca'
 
 export interface RouterDeps {
   config: ResolvedConfig
@@ -72,8 +72,8 @@ export async function handleFerryRequest(
   if (path === deps.config.basePath || path === `${bp}/`) {
     return startHackclubAuth(url, deps)
   }
-  if (path === `${bp}/hackclub/callback`) {
-    return hackclubCallback(request, url, deps)
+  if (path === `${bp}/hca/callback`) {
+    return hcaCallback(request, url, deps)
   }
   if (path === `${bp}/hackatime/callback`) {
     return hackatimeCallback(request, url, deps)
@@ -88,9 +88,9 @@ async function startHackclubAuth(
   deps: RouterDeps
 ): Promise<Response> {
   const { config, session } = deps
-  const endpoints = requireHackclubEndpoints(config)
+  const endpoints = requireHcaEndpoints(config)
   const state = randomState()
-  const redirectUri = `${redirectBase(url, config)}/hackclub/callback`
+  const redirectUri = `${redirectBase(url, config)}/hca/callback`
 
   const authorizeUrl = buildAuthorizeUrl(endpoints, {
     redirectUri,
@@ -98,12 +98,12 @@ async function startHackclubAuth(
     state,
   })
 
-  const setCookie = await session.commit({ state, pending: 'hackclub' })
+  const setCookie = await session.commit({ state, pending: 'hca' })
   return redirect(authorizeUrl, setCookie)
 }
 
 /** Handle the redirect back from Hack Club Auth. */
-async function hackclubCallback(
+async function hcaCallback(
   request: Request,
   url: URL,
   deps: RouterDeps
@@ -132,12 +132,12 @@ async function hackclubCallback(
 
   const sess = await session.read(request)
   if (!sess) return sessionExpired()
-  if (sess.pending !== 'hackclub' || sess.state !== state) {
+  if (sess.pending !== 'hca' || sess.state !== state) {
     return sessionExpired()
   }
 
-  const endpoints = requireHackclubEndpoints(config)
-  const redirectUri = `${redirectBase(url, config)}/hackclub/callback`
+  const endpoints = requireHcaEndpoints(config)
+  const redirectUri = `${redirectBase(url, config)}/hca/callback`
   const token = await exchangeCode(endpoints, { code, redirectUri })
   const identity = await fetchIdentity(token.access_token)
 

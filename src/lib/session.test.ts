@@ -60,7 +60,7 @@ describe('cookie helpers', () => {
 describe('session store', () => {
   const data: SessionData = {
     state: 'abc123',
-    pending: 'hackclub',
+    pending: 'hca',
     authToken: 'OwpFjcAKOj2uWza5',
   }
 
@@ -72,7 +72,7 @@ describe('session store', () => {
     const read = await store.read(requestWithCookie(baseOpts.cookieName, value))
     if (!read) throw new Error('expected a session to be read back')
     expect(read.state).toBe('abc123')
-    expect(read.pending).toBe('hackclub')
+    expect(read.pending).toBe('hca')
     expect(read.authToken).toBe('OwpFjcAKOj2uWza5')
     expect(typeof read.exp).toBe('number')
   })
@@ -87,7 +87,7 @@ describe('session store', () => {
     const store = createSessionStore(baseOpts)
     const value = cookieValue(await store.commit(data))
     expect(value).not.toContain('OwpFjcAKOj2uWza5')
-    expect(value).not.toContain('hackclub')
+    expect(value).not.toContain('hca')
   })
 
   it('rejects a tampered cookie', async () => {

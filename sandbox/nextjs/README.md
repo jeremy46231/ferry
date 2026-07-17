@@ -8,7 +8,7 @@ framework-agnostic YSWS submission library.
 The entire integration is one route handler,
 `app/submit/[[...path]]/route.ts`, using an *optional* catch-all so it
 matches `/submit` itself as well as nested paths like
-`/submit/hackclub/callback`:
+`/submit/hca/callback`:
 
 ```ts
 import { createFerry } from 'ferry'
