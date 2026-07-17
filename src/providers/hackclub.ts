@@ -1,5 +1,5 @@
 import type { ResolvedConfig } from '../config'
-import type { OAuthEndpoints } from '../oauth'
+import type { OAuthEndpoints } from '../lib/oauth'
 
 /**
  * Hack Club Auth provider: OAuth endpoints, the `/api/v1/me` identity shape,

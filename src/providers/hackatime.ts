@@ -1,5 +1,5 @@
 import type { ResolvedConfig } from '../config'
-import type { OAuthEndpoints } from '../oauth'
+import type { OAuthEndpoints } from '../lib/oauth'
 
 /**
  * Hackatime provider: OAuth endpoints, the authenticated user's id, and coding

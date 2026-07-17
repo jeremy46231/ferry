@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createCipher } from './crypto'
 import { createFerry, type FerryConfig } from './index'
+import { createCipher } from './lib/crypto'
 
 const BASE = 'https://app.example.com'
 

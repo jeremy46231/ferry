@@ -1,5 +1,5 @@
+import type { SessionData } from '../types'
 import { createCipher } from './crypto'
-import type { SessionData } from './types'
 
 /**
  * Encrypted session cookie. The cookie holds only the minimal in-flight state

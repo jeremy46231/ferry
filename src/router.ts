@@ -1,3 +1,8 @@
+import type { ResolvedConfig } from './config'
+import { escapeHtml, htmlResponse } from './http/pages'
+import { createCipher } from './lib/crypto'
+import { buildAuthorizeUrl, exchangeCode, randomState } from './lib/oauth'
+import type { SessionStore } from './lib/session'
 import {
   type AirtableConfig,
   getUser,
@@ -7,11 +12,7 @@ import {
   requireAirtable,
   updateUserHackatime,
   upsertUser,
-} from './airtable'
-import type { ResolvedConfig } from './config'
-import { createCipher } from './crypto'
-import { buildAuthorizeUrl, exchangeCode, randomState } from './oauth'
-import { escapeHtml, htmlResponse } from './pages'
+} from './providers/airtable'
 import {
   fetchHackatimeUser,
   fetchProjects,
@@ -23,7 +24,6 @@ import {
   HCA_VERIFICATION_URL,
   requireHackclubEndpoints,
 } from './providers/hackclub'
-import type { SessionStore } from './session'
 
 export interface RouterDeps {
   config: ResolvedConfig

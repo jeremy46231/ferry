@@ -235,17 +235,19 @@ ferry/                 # the npm package (this repo)
     index.ts           # createFerry -> { handle, middleware, config }
     router.ts          # the state machine (only stateful logic)
     config.ts          # safe env reading (+ explicit env bag) + merge + validation
-    crypto.ts          # HKDF subkeys + AES-GCM createCipher(secret, purpose)
-    session.ts         # encrypted session cookie (uses crypto.ts)
-    random.ts          # randomHex / randomToken
-    oauth.ts           # generic OAuth2 authorization-code client (no PKCE)
-    pages.ts           # minimal built-in HTML + text responses
-    node.ts            # Connect (req,res,next) adapter -> ferry.middleware()
-    airtable.ts        # REST client: upsert user, sync projects
-    providers/
-      hackclub.ts      # /api/v1/me, eligibility
-      hackatime.ts     # /authenticated/me + /authenticated/projects
     types.ts           # FerryConfig, SessionData
+    lib/               # runtime-agnostic primitives (no external service)
+      crypto.ts        #   HKDF subkeys + AES-GCM createCipher(secret, purpose)
+      session.ts       #   encrypted session cookie (uses crypto.ts)
+      oauth.ts         #   generic OAuth2 authorization-code client (no PKCE)
+      random.ts        #   randomHex / randomToken
+    http/              # request/response plumbing
+      pages.ts         #   minimal built-in HTML + text responses
+      node.ts          #   Connect (req,res,next) adapter -> ferry.middleware()
+    providers/         # external service clients
+      hackclub.ts      #   /api/v1/me, eligibility
+      hackatime.ts     #   /authenticated/me + /authenticated/projects
+      airtable.ts      #   REST client: upsert user, sync projects
   package.json         # bun, tsdown build, ESM+CJS exports, types
   biome.json, tsconfig.json, tsconfig.test.json, tsdown.config.ts
 sandbox/               # one integration harness per host, all on :5173 (creds

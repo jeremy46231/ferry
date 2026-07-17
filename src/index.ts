@@ -1,8 +1,8 @@
 import { type ResolvedConfig, resolveConfig, validateConfig } from './config'
-import { type ConnectMiddleware, toNodeMiddleware } from './node'
-import { textResponse } from './pages'
+import { type ConnectMiddleware, toNodeMiddleware } from './http/node'
+import { textResponse } from './http/pages'
+import { createSessionStore, type SessionStore } from './lib/session'
 import { handleFerryRequest } from './router'
-import { createSessionStore, type SessionStore } from './session'
 import type { FerryConfig } from './types'
 
 export type { ResolvedConfig } from './config'
@@ -10,8 +10,8 @@ export type {
   ConnectMiddleware,
   NodeRequestLike,
   NodeResponseLike,
-} from './node'
-export { toNodeMiddleware } from './node'
+} from './http/node'
+export { toNodeMiddleware } from './http/node'
 export type { FerryConfig, SessionData } from './types'
 
 export interface Ferry {

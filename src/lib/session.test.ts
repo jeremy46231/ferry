@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
+import type { SessionData } from '../types'
 import {
   __internal,
   createSessionStore,
   type SessionStoreOptions,
 } from './session'
-import type { SessionData } from './types'
 
 const { parseCookies, serializeCookie } = __internal
 
